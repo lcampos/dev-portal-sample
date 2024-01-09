@@ -1,0 +1,246 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Dev portal sample"
+  },
+  "components": {
+    "schemas": {
+      "TodoObject": {
+        "type": "object",
+        "required": [
+          "id",
+          "userId",
+          "description",
+          "isCompleted"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "isCompleted": {
+            "type": "boolean"
+          }
+        }
+      },
+      "InsertTodoObject": {
+        "type": "object",
+        "title": "Todo Insert Schema",
+        "required": [
+          "userId",
+          "description",
+          "isCompleted"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "userId": {
+            "type": "string",
+            "description": "The userId that created the todo list item.",
+            "examples": [
+              1
+            ]
+          },
+          "description": {
+            "type": "string",
+            "description": "The title/description of the todo list item.",
+            "examples": [
+              "Wash the dishes"
+            ]
+          },
+          "isCompleted": {
+            "type": "boolean",
+            "description": "Whether or not the todo list item is completed.",
+            "examples": [
+              false
+            ]
+          }
+        },
+        "examples": [
+          {
+            "userId": "1234",
+            "description": "Wash the dishes",
+            "isCompleted": false
+          }
+        ]
+      },
+      "SchemaValidationError": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "status",
+          "detail",
+          "instance"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "number"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string"
+          },
+          "trace": {
+            "type": "object"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/v1/todos": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
+      "post": {
+        "summary": "Create Todo task",
+        "description": "Creates a todo list item.",
+        "x-zuplo-route": {
+          "corsPolicy": "none",
+          "handler": {
+            "export": "default",
+            "module": "$import(./modules/hello-world)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": [
+            ]
+          }
+        },
+        "tags": [
+          "Standard Todo List Endpoints"
+        ],
+        "operationId": "f9e30d74-56ca-4f1e-bcb3-75fe305ea5e4",
+        "requestBody": {
+          "description": "Payload required to create a todo list item.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InsertTodoObject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created todo list item",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TodoObject",
+                  "examples": [
+                    {
+                      "userId": "1234",
+                      "id": "task_zR9ulh",
+                      "description": "Take out the trash",
+                      "isCompleted": false
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Schema validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchemaValidationError",
+                  "examples": [
+                    {
+                      "type": "https://httpproblems.com/http-status/400",
+                      "title": "Bad Request",
+                      "status": 400,
+                      "detail": "Incoming body did not pass schema validation",
+                      "instance": "/v1/todos",
+                      "trace": {
+                        "timestamp": "2023-02-27T18:53:05.997Z",
+                        "requestId": "b1e1c2a9-da7b-436c-aa89-2f78918047b2",
+                        "buildId": "83e3d0f1-89a8-46ea-b040-e0a2432f2ea5",
+                        "rayId": "7a031f102747944d-SJC"
+                      },
+                      "errors": [
+                        "Body must have required property 'userId'"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authorization error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchemaValidationError",
+                  "examples": [
+                    {
+                      "type": "https://httpproblems.com/http-status/401",
+                      "title": "Unauthorized",
+                      "status": 401,
+                      "detail": "Authorization Failed",
+                      "instance": "/v1/todos",
+                      "trace": {
+                        "timestamp": "2023-02-27T18:53:05.997Z",
+                        "requestId": "b1e1c2a9-da7b-436c-aa89-2f78918047b2",
+                        "buildId": "83e3d0f1-89a8-46ea-b040-e0a2432f2ea5",
+                        "rayId": "7a031f102747944d-SJC"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchemaValidationError",
+                  "examples": [
+                    {
+                      "type": "https://httpproblems.com/http-status/429",
+                      "title": "Too Many Requests",
+                      "status": 429,
+                      "instance": "/v1/todos",
+                      "trace": {
+                        "timestamp": "2023-08-31T20:54:51.945Z",
+                        "requestId": "5f37b0a7-a9e2-4bae-abeb-8f7d2df899f4",
+                        "buildId": "1f994dc6-30fc-420e-9344-5fa601163965",
+                        "rayId": "7ff82bce0339d02d-SJC"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
