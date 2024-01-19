@@ -12,7 +12,7 @@ export default async function (request: ZuploRequest, context: ZuploContext) {
    * return the content of a fetch. Try it by
    * uncommenting the line below.
    */
-  // return fetch('http://www.example.com/');
+
 
   /**
    * In this example, we're just going to return some content.
